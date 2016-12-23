@@ -3,21 +3,26 @@ var Body = React.createClass({
     return { items: [] }
   },
   componentDidMount() {
-    $.getJSON('/api/v1/items.json', (response) => { this.setState({ items: response }) });
-
+    // $.getJSON('/api/v1/items.json', (res) => {
+    //   console.log(res);
+    //    this.setState({ items: response })
+    // });
+    fetch('/api/v1/items.json')
+      .then((res) => {
+        return res.json();
+      })
+      .then((obj) => {
+        this.setState({ items: obj });
+      });
   },
   handleSubmit(item) {
     var newState = this.state.items.concat(item);
     this.setState({ items: newState })
   },
   handleDelete(id) {
-    $.ajax({
-      url: `/api/v1/items/${id}`,
-      type: 'DELETE',
-      success: () => {
-        this.removeItemClient(id);
-      }
-    })
+    fetch(`/api/v1/items/${id}`, {
+      method: 'DELETE',
+    }).then( ()=> { this.removeItemClient(id); });
   },
   removeItemClient(id) {
     var newItems = this.state.items.filter((item) => {
